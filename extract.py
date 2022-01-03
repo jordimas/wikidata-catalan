@@ -30,9 +30,13 @@ def get_ca_label(item):
     label = ''
 
     try:
+        if 'ca' not in item['labels']:
+            return label
+
         label = item['labels']['ca']['value']
 
     except:
+        #print("Error")
         pass
 
     return label
@@ -55,20 +59,21 @@ def main():
         values = []
         for item in items:
             ca_label = get_ca_label(item)
-    
+            items_processed += 1
+
+            if items_processed % 1000000 == 0:
+                save_items(total_items, items_saved, items_processed, values)
+
             if ca_label is None or len(ca_label) == 0:
                 continue
 
             identifier = item['id']
 
             text =f"{identifier} - {ca_label}"
-            print(text)
             fh_words.write(text + "\n")
 
-            items_processed += 1
-
-            if items_processed % 1000000 == 0:
-              save_items(total_items, items_saved, items_processed, values)
+            values.append(value)
+            items_saved += 1
 
         save_items(total_items, items_saved, items_processed, values)
 
